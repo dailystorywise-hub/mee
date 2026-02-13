@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Nikky - From Prem 🧸</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap');
+
+        :root {
+            --bg: #fdf2f8; /* Soft Pink */
+            --accent: #ec4899; /* Teddy Pink */
+            --glass: rgba(255, 255, 255, 0.85);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            font-family: 'Quicksand', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+            color: #831843;
+        }
+
+        .container {
+            width: 360px; height: 640px;
+            background: #fff0f6 url('https://www.transparenttextures.com/patterns/paws.png');
+            border: 10px solid #fbcfe8; border-radius: 40px;
+            position: relative; overflow-y: auto; overflow-x: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            scroll-behavior: smooth;
+        }
+
+        .container::-webkit-scrollbar { display: none; }
+
+        section {
+            min-height: 100%; width: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 30px; box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* --- TEDDY ANIMATIONS --- */
+        .teddy-img { width: 140px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-15px) rotate(5deg); } }
+
+        /* --- MUSIC GAME (PIANO TILES STYLE) --- */
+        #musicGame { background: white; border-radius: 20px; padding: 15px; width: 90%; height: 250px; position: relative; overflow: hidden; border: 2px solid var(--accent); margin-top: 15px; }
+        .tile { position: absolute; width: 50px; height: 50px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; animation: fall 3s linear forwards; }
+        @keyframes fall { from { top: -50px; } to { top: 300px; } }
+
+        /* --- BUTTONS --- */
+        .btn {
+            background: var(--accent); color: white; border: none; padding: 12px 25px;
+            border-radius: 50px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
+            font-family: 'Fredoka One', cursive; letter-spacing: 1px;
+            margin-top: 15px;
+        }
+
+        .loading-bar { width: 80%; height: 12px; background: #ffe4e6; border-radius: 10px; margin-top: 20px; }
+        .fill { width: 0%; height: 100%; background: var(--accent); animation: load 3s forwards; }
+        @keyframes load { to { width: 100%; } }
+
+        .note-card { background: var(--glass); border-radius: 25px; padding: 20px; border: 2px dashed var(--accent); }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container" id="mainContainer">
+        
+        <section id="s1">
+            <img src="https://cdn-icons-png.flaticon.com/512/3241/3241514.png" class="teddy-img"> <h2 style="font-family: 'Fredoka One';">Wait a sec, Nikky... 🧸</h2>
+            <div class="loading-bar"><div class="fill"></div></div>
+            <p>Prem is sending lots of love...</p>
+        </section>
+
+        <section id="s2">
+            <h3 style="margin-bottom: 5px;">Catch the Love! ❤️</h3>
+            <p style="font-size: 0.9rem;">Tap the hearts to start the music for Nikky</p>
+            <div id="musicGame">
+                </div>
+            <p id="scoreText">Caught: 0/5</p>
+            <button class="btn" id="nextBtn" style="display:none;" onclick="scrollToSection('s3')">Yay! Next ➔</button>
+        </section>
+
+        <section id="s3">
+            <div class="note-card">
+                <img src="https://cdn-icons-png.flaticon.com/512/3241/3241478.png" width="80"> <h3 style="margin-top: 10px;">A Little Note 💌</h3>
+                <p>"Hey Nikky, you matter to me more than all the teddy bears in the world. I'm so glad we're connected."</p>
+                <button class="btn" onclick="scrollToSection('s4')">Final Surprise ➔</button>
+            </div>
+        </section>
+
+        <section id="s4">
+            <img src="https://cdn-icons-png.flaticon.com/512/2913/2913410.png" class="teddy-img"> <h2 style="font-family: 'Fredoka One';">The Grand Finale...</h2>
+            <p>Will you be my Valentine, Nikky? 🧸❤️</p>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn" onclick="celebrate()">Yes!</button>
+                <button class="btn" id="noBtn" onmouseover="moveNo()" style="background: #cbd5e1;">No</button>
+            </div>
+            <p style="margin-top: 40px; font-weight: bold; font-size: 1.2rem;">- Your Prem ❤️</p>
+        </section>
+    </div>
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        const gameContainer = document.getElementById('musicGame');
+        let score = 0;
+
+        // Auto transition from loading
+        setTimeout(() => { scrollToSection('s2'); startMusicGame(); }, 3500);
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Music Game Logic
+        function startMusicGame() {
+            let gameInterval = setInterval(() => {
+                if (score >= 5) {
+                    clearInterval(gameInterval);
+                    document.getElementById('nextBtn').style.display = 'block';
+                    return;
+                }
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.innerHTML = '❤️';
+                tile.style.left = Math.random() * (gameContainer.offsetWidth - 50) + 'px';
+                tile.onclick = () => {
+                    score++;
+                    document.getElementById('scoreText').innerText = `Caught: ${score}/5`;
+                    tile.remove();
+                    if(score === 1) music.play(); // Start music on first tap
+                };
+                gameContainer.appendChild(tile);
+                setTimeout(() => tile.remove(), 3000);
+            }, 1000);
+        }
+
+        // No Button Run Away
+        function moveNo() {
+            const btn = document.getElementById('noBtn');
+            btn.style.position = 'absolute';
+            btn.style.top = Math.random() * 80 + '%';
+            btn.style.left = Math.random() * 80 + '%';
+        }
+
+        function celebrate() {
+            alert("Nikky said YES! 🧸🎉 Prem is the happiest today!");
+            for(let i=0; i<30; i++) {
+                const h = document.createElement('div');
+                h.innerHTML = '🧸';
+                h.style.position = 'fixed';
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.top = '100vh';
+                h.style.fontSize = '30px';
+                h.style.transition = '3s linear';
+                document.body.appendChild(h);
+                setTimeout(() => { h.style.transform = `translateY(-110vh) rotate(360deg)`; }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
